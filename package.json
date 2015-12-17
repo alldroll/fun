@@ -1,0 +1,21 @@
+{
+  "name": "fun",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "engines": {
+      "node": ">= 5"
+  },
+  "dependencies": {
+    "jest-cli": "^0.8.0"
+  },
+  "scripts": {
+    "test": "node_modules/jest-cli/bin/jest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "alldroll",
+  "license": "MIT"
+}
