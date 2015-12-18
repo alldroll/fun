@@ -1,4 +1,3 @@
-
 var defaultCompare = function(a, b) { 
     return a - b;
 };
