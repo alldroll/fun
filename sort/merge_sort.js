@@ -5,23 +5,16 @@ defaultCompare = function(a, b) {
 };
 
 merge = function(arr, p, q, r, compare) {
-    var left = [], right = [], i, j, k, n1, n2;
+    var left, right, i, j, k;
 
-    for (i = 0, len = (q - p + 1); i < len; ++i) {
-        left.push(arr[p + i]);
-    }
-
-    for (i = 0, len = (r - q); i < len; ++i) {
-        right.push(arr[q + i + 1]);
-    }
+    left = arr.slice(p, q + 1);
+    right = arr.slice(q + 1, r + 1);
 
     for (k = p, i = 0, j = 0; k <= r; ++k) {
         if (j >= (r - q) || (i < (q - p + 1) && compare(left[i], right[j]) < 0)) {
-            arr[k] = left[i];
-            ++i;
+            arr[k] = left[i++];
         } else {
-            arr[k] = right[j];
-            ++j;
+            arr[k] = right[j++];
         }
     }
 
