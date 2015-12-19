@@ -9,7 +9,7 @@ module.exports = function(arr, compare) {
         compare = defaultCompare;
     }
 
-    for (i = 0, len = arr.length; i < len; ++i) {
+    for (i = 0, len = arr.length; i < len - 1; ++i) {
         minIdx = i;
         for (j = i + 1; j < len; ++j) {
             if (compare(arr[minIdx], arr[j]) > 0) {
