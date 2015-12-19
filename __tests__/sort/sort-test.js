@@ -1,24 +1,43 @@
+jest.dontMock('../../sort/insertion_sort');
+jest.dontMock('../../sort/merge_sort');
 jest.dontMock('../../sort/selection_sort');
-var selectionSort = require('../../sort/selection_sort');
 
-Array.prototype.selectionSort = function(compare) {
-    return selectionSort(this, compare);
+var sortAlgoSet, addAlgoToArrProt, sortHelper;
+
+sortAlgoSet = {
+    insertionSort: require('../../sort/insertion_sort'),
+    selectionSort: require('../../sort/selection_sort'),
+    mergeSort: require('../../sort/merge_sort')
 };
 
-describe('selection sort test', function() {
+addAlgoToArrProt = function(algo, impl) {
+    Array.prototype[algo] = function(compare) {
+        return impl(this, compare);
+    };
+};
+
+(function() {
+    for (var algo in sortAlgoSet) {
+         addAlgoToArrProt(algo, sortAlgoSet[algo]);
+    }
+})();
+
+describe('insertion sort test', function() {
+
     it('test suite', function() {
         var provider = [
             { arr: [], expected: [] },
             { arr: [1], expected: [1] },
             { arr: [2, 1], expected: [1, 2] },
             { arr: [3, 5, 1, 4, 0], expected: [0, 1, 3, 4, 5] },
-            { arr: [], expected: [] }
         ], i, len, test, actual;
 
         for (i = 0, len = provider.length; i < len; ++i) {
             test = provider[i];
-            actual = test.arr.selectionSort();
-            expect(actual).toEqual(test.expected);
+            for (var algo in sortAlgoSet) {
+                actual = test.arr[algo]();
+                expect(actual).toEqual(test.expected);
+            }
         }
     });
 
@@ -39,8 +58,10 @@ describe('selection sort test', function() {
 
         for (i = 0, len = provider.length; i < len; ++i) {
             test = provider[i];
-            actual = test.arr.selectionSort(test.comparator);
-            expect(actual).toEqual(test.expected);
+            for (var algo in sortAlgoSet) {
+                actual = test.arr[algo](test.comparator);
+                expect(actual).toEqual(test.expected);
+            }
         }
     });
 });
