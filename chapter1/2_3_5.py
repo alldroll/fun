@@ -7,7 +7,7 @@ def binary_search_rec(arr, v, start, end):
     if start > end:
         return None
 
-    mid = start + ((end - start) >> 1)
+    mid = end + start >> 1
 
     if arr[mid] == v:
         return v
@@ -27,7 +27,8 @@ def binary_search(arr, v):
         return None
 
     while end - start >= 0:
-        mid = start + ((end - start) >> 1)
+        mid = end + start >> 1
+
         if arr[mid] == v:
             return v
         if arr[mid] > v:
