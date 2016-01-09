@@ -57,8 +57,13 @@ class Test(unittest.TestCase):
                 'expected': (7, 10, 43)
             },
             { 'arr': [1, -4, 3, -4], 'expected': (2, 2, 3) },
+        # whole array
             { 'arr': [i for i in range(1, 11)], 'expected': (0, 9, 55) },
-            { 'arr': [i for i in range(0, 10)], 'expected': (1, 9, 45) }
+        # do not include zero
+            { 'arr': [i for i in range(0, 10)], 'expected': (1, 9, 45) },
+        # 4_1_1
+            { 'arr': [-1, -2, -3, -4], 'expected': (0, 0, -1) },
+            { 'arr': [-2, -3, -1, -4], 'expected': (2, 2, -1) }
         ]
 
         for test in provider:
