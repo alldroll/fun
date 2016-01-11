@@ -115,7 +115,5 @@ class Test(unittest.TestCase):
 
             self.assertEqual(test['expected'], linear_find_max_subarray(arr))
 
-            break
-
 if __name__ == "__main__":
     unittest.main()
