@@ -44,6 +44,48 @@ def find_cross_subarray(arr, low, mid, high):
 
     return (s_low, s_high, left_sum + right_sum)
 
+def rude_find_max_subarray(arr):
+    n = len(arr)
+    max_sum = M_INF
+    low, high = 0, 0
+
+    for i in range(n):
+        c_sum = 0
+        for j in range(i, n):
+            c_sum = c_sum + arr[j]
+            if max_sum < c_sum:
+                max_sum = c_sum
+                low, high = i, j
+
+    return (low, high, max_sum)
+
+def linear_find_max_subarray(arr):
+    n = len(arr)
+    max_sum = M_INF
+    c_sum, min_sum = 0, 0
+    low, high = 0, 0
+    min_pos = -1
+
+    for j in range(n):
+        c_sum = c_sum + arr[j] # A[1, j + 1] = A[1, j] + A[j + 1]
+        """
+        we have to find max subarray in A[1, j + 1]
+        it could be subarray in A[1, j] or subarray A[i, j + 1], i in [0, j + 1]
+
+        how to find i ? we just find min subarray in A[0, j - 1]
+
+        """
+        r_sum = c_sum - min_sum
+
+        if r_sum > max_sum:
+            max_sum = r_sum
+            low, high = min_pos + 1, j
+
+        if c_sum < min_sum:
+            min_sum = c_sum
+            min_pos = j
+
+    return (low, high, max_sum)
 
 class Test(unittest.TestCase):
 
@@ -57,20 +99,23 @@ class Test(unittest.TestCase):
                 'expected': (7, 10, 43)
             },
             { 'arr': [1, -4, 3, -4], 'expected': (2, 2, 3) },
-        # whole array
             { 'arr': [i for i in range(1, 11)], 'expected': (0, 9, 55) },
-        # do not include zero
-            { 'arr': [i for i in range(0, 10)], 'expected': (1, 9, 45) },
-        # 4_1_1
             { 'arr': [-1, -2, -3, -4], 'expected': (0, 0, -1) },
             { 'arr': [-2, -3, -1, -4], 'expected': (2, 2, -1) }
         ]
 
         for test in provider:
             arr = test['arr']
+
             self.assertEqual(
                 test['expected'], find_max_subarray(arr, 0, len(arr) - 1)
             )
+
+            self.assertEqual(test['expected'], rude_find_max_subarray(arr))
+
+            self.assertEqual(test['expected'], linear_find_max_subarray(arr))
+
+            break
 
 if __name__ == "__main__":
     unittest.main()
