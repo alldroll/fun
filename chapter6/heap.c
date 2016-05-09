@@ -51,25 +51,31 @@ void max_heapify(HeapT* heap, size_t index) {
         return;
     }
 
-    size_t left_index = LEFT_CHILD(index);
-    size_t right_index = RIGHT_CHILD(index);
-    size_t largest_index = index;
+    size_t largest_index, left_index, right_index;
 
-    if (heap->size > left_index &&
-        heap->data[left_index] > heap->data[largest_index]
-    ) {
-        largest_index = left_index;
-    }
+    while (1) {
+        left_index = LEFT_CHILD(index);
+        right_index = RIGHT_CHILD(index);
+        largest_index = index;
 
-    if (heap->size > right_index &&
-        heap->data[right_index] > heap->data[largest_index]
-    ) {
-        largest_index = right_index;
-    }
+        if (heap->size > left_index &&
+            heap->data[left_index] > heap->data[largest_index]
+        ) {
+            largest_index = left_index;
+        }
 
-    if (largest_index != index) {
-        swap(&heap->data[largest_index], &heap->data[index]);
-        max_heapify(heap, largest_index);
+        if (heap->size > right_index &&
+            heap->data[right_index] > heap->data[largest_index]
+        ) {
+            largest_index = right_index;
+        }
+
+        if (largest_index != index) {
+            swap(&heap->data[largest_index], &heap->data[index]);
+            index = largest_index;
+        } else {
+            break;
+        }
     }
 }
 
@@ -124,16 +130,35 @@ void min_heapify(HeapT* heap, size_t index) {
         assert(PARENT(7) == 3);
         assert(PARENT(8) == 3);
 
-        SequenceT arr[14] = {27, 17, 3, 16, 13, 10, 1, 5, 7, 12, 4, 8, 9, 0};
-        HeapT* heap = create_heap((SequenceT*) &arr, 14);
-        max_heapify(heap, 2);
+        /* 6_2_1, 6_2_5 */
+        {
+            SequenceT arr[14] = {27, 17, 3, 16, 13, 10, 1, 5, 7, 12, 4, 8, 9, 0};
+            SequenceT expected[14] = {27, 17, 10, 16, 13, 9, 1, 5, 7, 12, 4, 8, 3, 0};
+            HeapT* heap = create_heap((SequenceT*) &arr, 14);
+            max_heapify(heap, 2);
 
-        size_t i = 0;
-        for (; i < heap->size; ++i) {
-            printf("%d: %d\n", i, heap->data[i]);
+            size_t i = 0;
+            for (; i < heap->size; ++i) {
+                assert(expected[i] == heap->data[i]);
+            }
+
+            destroy_heap(heap);
         }
 
-        destroy_heap(heap);
+        /* 6_2_2 */
+        {
+            SequenceT arr[5] = {2, 6, 3, 7, 5};
+            SequenceT expected[5] = {2, 5, 3, 7, 6};
+            HeapT* heap = create_heap((SequenceT*) &arr, 5);
+            min_heapify(heap, 1);
+
+            size_t i = 0;
+            for (; i < heap->size; ++i) {
+                assert(expected[i] == heap->data[i]);
+            }
+
+            destroy_heap(heap);
+        }
 
         return 0;
     }
