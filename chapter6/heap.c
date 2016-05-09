@@ -106,6 +106,28 @@ void min_heapify(HeapT* heap, size_t index) {
     }
 }
 
+void build_max_heap(HeapT* heap) {
+    if (heap == NULL) {
+        return;
+    }
+
+    int index = PARENT(heap->size - 1);
+    for (; index >= 0; --index) {
+        max_heapify(heap, index);
+    }
+}
+
+void build_min_heap(HeapT* heap) {
+    if (heap == NULL) {
+        return;
+    }
+
+    int index = PARENT(heap->size - 1);
+    for (; index >= 0; --index) {
+        min_heapify(heap, index);
+    }
+}
+
 #if HEAP_DEBUG == true
     #include <assert.h>
 
@@ -151,6 +173,21 @@ void min_heapify(HeapT* heap, size_t index) {
             SequenceT expected[5] = {2, 5, 3, 7, 6};
             HeapT* heap = create_heap((SequenceT*) &arr, 5);
             min_heapify(heap, 1);
+
+            size_t i = 0;
+            for (; i < heap->size; ++i) {
+                assert(expected[i] == heap->data[i]);
+            }
+
+            destroy_heap(heap);
+        }
+
+        /* 6_3_1 */
+        {
+            SequenceT arr[10] = {4, 1, 3, 2, 16, 9, 10, 14, 8, 7};
+            SequenceT expected[10] = {16, 14, 10, 8, 7, 9, 3, 2, 4, 1};
+            HeapT* heap = create_heap((SequenceT*) &arr, 10);
+            build_max_heap(heap);
 
             size_t i = 0;
             for (; i < heap->size; ++i) {
