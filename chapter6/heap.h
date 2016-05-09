@@ -1,12 +1,13 @@
 #ifndef __HEAP__
 #define __HEAP__
 
-#define HEAP_DEBUG true
+#include <stddef.h>
 
 typedef int SequenceT;
 
 typedef struct {
-    int size;
+    size_t size;
+    size_t allocated_size;
     SequenceT* data;
 } HeapT;
 
@@ -16,5 +17,8 @@ extern void max_heapify(HeapT* heap, size_t index);
 extern void min_heapify(HeapT* heap, size_t index);
 extern void build_max_heap(HeapT* heap);
 extern void build_max_heap(HeapT* heap);
+extern void heapsort(SequenceT* arr, size_t size);
+extern SequenceT heap_maximum(HeapT* heap);
+extern SequenceT heap_extract_max(HeapT* heap);
 
 #endif

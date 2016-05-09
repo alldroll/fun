@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include "heap.h"
+
+#define HEAP_DEBUG false
 
 #define LEFT_CHILD(index) (index << 1) + 1
 #define RIGHT_CHILD(index) LEFT_CHILD(index) + 1
@@ -23,6 +26,7 @@ HeapT* create_heap(SequenceT* arr, size_t size) {
         return NULL;
     }
 
+    /*
     heap->data = (SequenceT*) malloc(sizeof(SequenceT) * size);
     if (heap->data == NULL) {
         free(heap);
@@ -30,6 +34,8 @@ HeapT* create_heap(SequenceT* arr, size_t size) {
     }
 
     memcpy(heap->data, arr, size * sizeof(SequenceT));
+    */
+    heap->data = arr;
     heap->size = size;
     return heap;
 }
@@ -39,9 +45,11 @@ void destroy_heap(HeapT* heap) {
         return;
     }
 
+    /*
     if (heap->data != NULL) {
         free(heap->data);
     }
+    */
 
     free(heap);
 }
@@ -128,8 +136,42 @@ void build_min_heap(HeapT* heap) {
     }
 }
 
+void heapsort(SequenceT* arr, size_t size) {
+    if (arr == NULL || size <= 1) {
+        return;
+    }
+
+    HeapT* heap = create_heap(arr, size);
+    if (heap == NULL) {
+        return;
+    }
+
+    build_max_heap(heap);
+    size_t index = size - 1;
+    for (; index > 0; --index) {
+        swap(&heap->data[index], &heap->data[0]);
+        --heap->size;
+        max_heapify(heap, 0);
+    }
+
+    destroy_heap(heap);
+}
+
+SequenceT heap_maximum(HeapT* heap) {
+    assert(heap != NULL && heap->size != 0);
+    return heap->data[0];
+}
+
+SequenceT heap_extract_max(HeapT* heap) {
+    assert(heap != NULL && heap->size != 0);
+    SequenceT max = heap_maximum(heap);
+    heap->data[0] = heap->data[heap->size - 1];
+    --heap->size;
+    max_heapify(heap, 0);
+    return max;
+}
+
 #if HEAP_DEBUG == true
-    #include <assert.h>
 
     int main() {
 
@@ -195,6 +237,17 @@ void build_min_heap(HeapT* heap) {
             }
 
             destroy_heap(heap);
+        }
+
+        {
+            SequenceT arr[9] = {5, 13, 2, 25, 7, 17, 20, 8, 4};
+            SequenceT expected[9] = {2, 4, 5, 7, 8, 13, 17, 20, 25};
+
+            heapsort(arr, 9);
+            size_t i = 0;
+            for (; i < 9; ++i) {
+                assert(expected[i] == arr[i]);
+            }
         }
 
         return 0;
