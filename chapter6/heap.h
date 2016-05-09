@@ -20,5 +20,6 @@ extern void build_max_heap(HeapT* heap);
 extern void heapsort(SequenceT* arr, size_t size);
 extern SequenceT heap_maximum(HeapT* heap);
 extern SequenceT heap_extract_max(HeapT* heap);
+void heap_increase_key(HeapT* heap, size_t index, SequenceT key);
 
 #endif

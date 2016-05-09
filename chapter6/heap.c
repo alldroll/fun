@@ -55,9 +55,7 @@ void destroy_heap(HeapT* heap) {
 }
 
 void max_heapify(HeapT* heap, size_t index) {
-    if (heap == NULL) {
-        return;
-    }
+    assert(heap != NULL);
 
     size_t largest_index, left_index, right_index;
 
@@ -78,19 +76,17 @@ void max_heapify(HeapT* heap, size_t index) {
             largest_index = right_index;
         }
 
-        if (largest_index != index) {
-            swap(&heap->data[largest_index], &heap->data[index]);
-            index = largest_index;
-        } else {
+        if (largest_index == index) {
             break;
         }
+
+        swap(&heap->data[largest_index], &heap->data[index]);
+        index = largest_index;
     }
 }
 
 void min_heapify(HeapT* heap, size_t index) {
-    if (heap == NULL) {
-        return;
-    }
+    assert(heap != NULL);
 
     size_t left_index = LEFT_CHILD(index);
     size_t right_index = RIGHT_CHILD(index);
@@ -115,9 +111,7 @@ void min_heapify(HeapT* heap, size_t index) {
 }
 
 void build_max_heap(HeapT* heap) {
-    if (heap == NULL) {
-        return;
-    }
+    assert(heap != NULL);
 
     int index = PARENT(heap->size - 1);
     for (; index >= 0; --index) {
@@ -126,9 +120,7 @@ void build_max_heap(HeapT* heap) {
 }
 
 void build_min_heap(HeapT* heap) {
-    if (heap == NULL) {
-        return;
-    }
+    assert(heap != NULL);
 
     int index = PARENT(heap->size - 1);
     for (; index >= 0; --index) {
@@ -142,9 +134,7 @@ void heapsort(SequenceT* arr, size_t size) {
     }
 
     HeapT* heap = create_heap(arr, size);
-    if (heap == NULL) {
-        return;
-    }
+    assert(heap != NULL);
 
     build_max_heap(heap);
     size_t index = size - 1;
@@ -169,6 +159,18 @@ SequenceT heap_extract_max(HeapT* heap) {
     --heap->size;
     max_heapify(heap, 0);
     return max;
+}
+
+void heap_increase_key(HeapT* heap, size_t index, SequenceT key) {
+    assert(heap != NULL && heap->size > index);
+    assert(key > heap->data[index]);
+
+    heap->data[index] = key;
+    size_t parent_index = PARENT(index);
+    while (index > 0 && heap->data[parent_index] < heap->data[index]) {
+        swap(&heap->data[index], &heap->data[parent_index]);
+        index = parent_index;
+    }
 }
 
 #if HEAP_DEBUG == true
