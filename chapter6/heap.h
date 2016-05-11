@@ -4,15 +4,12 @@
 #include <stddef.h>
 
 typedef int SequenceT;
-
-typedef struct {
-    size_t size;
-    size_t allocated_size;
-    SequenceT* data;
-} HeapT;
+typedef void* HeapT;
 
 extern HeapT* create_heap(SequenceT* arr, size_t size);
 extern void destroy_heap(HeapT* heap);
+extern int get_heap_size(HeapT* heap);
+extern SequenceT* get_heap_data(HeapT* heap);
 extern void max_heapify(HeapT* heap, size_t index);
 extern void min_heapify(HeapT* heap, size_t index);
 extern void build_max_heap(HeapT* heap);

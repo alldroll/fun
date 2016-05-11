@@ -6,14 +6,25 @@
 
 #define HEAP_DEBUG false
 
+typedef struct {
+    size_t size;
+    size_t allocated_size;
+    SequenceT* data;
+} HeapImplT;
+
 #define LEFT_CHILD(index) (index << 1) + 1
 #define RIGHT_CHILD(index) LEFT_CHILD(index) + 1
 #define PARENT(index) (index - 1) >> 1
 
-inline void swap(SequenceT* a, SequenceT* b) {
+inline static void swap(SequenceT* a, SequenceT* b) {
     SequenceT c = *a;
     *a = *b;
     *b = c;
+}
+
+static int allocate_policy(HeapImplT* heap) {
+    /* TODO implement me!*/
+    return 0;
 }
 
 HeapT* create_heap(SequenceT* arr, size_t size) {
@@ -21,12 +32,11 @@ HeapT* create_heap(SequenceT* arr, size_t size) {
         return NULL;
     }
 
-    HeapT* heap = (HeapT*) malloc(sizeof(HeapT));
+    HeapImplT* heap = (HeapImplT*) malloc(sizeof(HeapImplT));
     if (heap == NULL) {
         return NULL;
     }
 
-    /*
     heap->data = (SequenceT*) malloc(sizeof(SequenceT) * size);
     if (heap->data == NULL) {
         free(heap);
@@ -34,29 +44,46 @@ HeapT* create_heap(SequenceT* arr, size_t size) {
     }
 
     memcpy(heap->data, arr, size * sizeof(SequenceT));
-    */
-    heap->data = arr;
+    heap->allocated_size = size;
     heap->size = size;
-    return heap;
+    return (HeapT*) heap;
 }
 
-void destroy_heap(HeapT* heap) {
-    if (heap == NULL) {
+void destroy_heap(HeapT* h) {
+    if (h == NULL) {
         return;
     }
 
-    /*
+    HeapImplT* heap = (HeapImplT*) h;
     if (heap->data != NULL) {
         free(heap->data);
     }
-    */
 
     free(heap);
 }
 
-void max_heapify(HeapT* heap, size_t index) {
-    assert(heap != NULL);
+int get_heap_size(HeapT* h) {
+    if (h == NULL) {
+        return - 1;
+    }
 
+    HeapImplT* heap = (HeapImplT*) h;
+    return heap->size;
+}
+
+SequenceT* get_heap_data(HeapT* h) {
+    if (h == NULL) {
+        return NULL;
+    }
+
+    HeapImplT* heap = (HeapImplT*) h;
+    return heap->data;
+}
+
+void max_heapify(HeapT* h, size_t index) {
+    assert(h != NULL);
+
+    HeapImplT* heap = (HeapImplT*) h;
     size_t largest_index, left_index, right_index;
 
     while (1) {
@@ -85,9 +112,10 @@ void max_heapify(HeapT* heap, size_t index) {
     }
 }
 
-void min_heapify(HeapT* heap, size_t index) {
-    assert(heap != NULL);
+void min_heapify(HeapT* h, size_t index) {
+    assert(h != NULL);
 
+    HeapImplT* heap = (HeapImplT*) h;
     size_t left_index = LEFT_CHILD(index);
     size_t right_index = RIGHT_CHILD(index);
     size_t lowest_index = index;
@@ -106,25 +134,27 @@ void min_heapify(HeapT* heap, size_t index) {
 
     if (lowest_index != index) {
         swap(&heap->data[lowest_index], &heap->data[index]);
-        max_heapify(heap, lowest_index);
+        max_heapify(h, lowest_index);
     }
 }
 
-void build_max_heap(HeapT* heap) {
-    assert(heap != NULL);
+void build_max_heap(HeapT* h) {
+    assert(h != NULL);
 
+    HeapImplT* heap = (HeapImplT*) h;
     int index = PARENT(heap->size - 1);
     for (; index >= 0; --index) {
-        max_heapify(heap, index);
+        max_heapify(h, index);
     }
 }
 
-void build_min_heap(HeapT* heap) {
-    assert(heap != NULL);
+void build_min_heap(HeapT* h) {
+    assert(h != NULL);
 
+    HeapImplT* heap = (HeapImplT*) h;
     int index = PARENT(heap->size - 1);
     for (; index >= 0; --index) {
-        min_heapify(heap, index);
+        min_heapify(h, index);
     }
 }
 
@@ -133,35 +163,41 @@ void heapsort(SequenceT* arr, size_t size) {
         return;
     }
 
-    HeapT* heap = create_heap(arr, size);
-    assert(heap != NULL);
+    HeapT* h = create_heap(arr, size);
+    HeapImplT* heap = (HeapImplT*) h;
+    assert(h != NULL);
 
-    build_max_heap(heap);
+    build_max_heap(h);
     size_t index = size - 1;
     for (; index > 0; --index) {
         swap(&heap->data[index], &heap->data[0]);
         --heap->size;
-        max_heapify(heap, 0);
+        max_heapify(h, 0);
     }
 
-    destroy_heap(heap);
+    memcpy(arr, heap->data, size * sizeof(SequenceT));
+    destroy_heap(h);
 }
 
-SequenceT heap_maximum(HeapT* heap) {
+SequenceT heap_maximum(HeapT* h) {
+    HeapImplT* heap = (HeapImplT*) h;
     assert(heap != NULL && heap->size != 0);
     return heap->data[0];
 }
 
-SequenceT heap_extract_max(HeapT* heap) {
+SequenceT heap_extract_max(HeapT* h) {
+    HeapImplT* heap = (HeapImplT*) h;
     assert(heap != NULL && heap->size != 0);
-    SequenceT max = heap_maximum(heap);
+
+    SequenceT max = heap_maximum(h);
     heap->data[0] = heap->data[heap->size - 1];
     --heap->size;
-    max_heapify(heap, 0);
+    max_heapify(h, 0);
     return max;
 }
 
-void heap_increase_key(HeapT* heap, size_t index, SequenceT key) {
+void heap_increase_key(HeapT* h, size_t index, SequenceT key) {
+    HeapImplT* heap = (HeapImplT*) h;
     assert(heap != NULL && heap->size > index);
     assert(key > heap->data[index]);
 
@@ -196,6 +232,16 @@ void heap_increase_key(HeapT* heap, size_t index, SequenceT key) {
         assert(PARENT(7) == 3);
         assert(PARENT(8) == 3);
 
+#define HEAP_ASSERT_DATA_EQUALS(expected, h)         \
+    {                                                \
+        assert(h != NULL);                           \
+        HeapImplT* heapImp = (HeapImplT*) h;         \
+        size_t i = 0;                                \
+        for (; i < heapImp->size; ++i) {             \
+            assert(expected[i] == heapImp->data[i]); \
+        }                                            \
+    }
+
         /* 6_2_1, 6_2_5 */
         {
             SequenceT arr[14] = {27, 17, 3, 16, 13, 10, 1, 5, 7, 12, 4, 8, 9, 0};
@@ -203,10 +249,7 @@ void heap_increase_key(HeapT* heap, size_t index, SequenceT key) {
             HeapT* heap = create_heap((SequenceT*) &arr, 14);
             max_heapify(heap, 2);
 
-            size_t i = 0;
-            for (; i < heap->size; ++i) {
-                assert(expected[i] == heap->data[i]);
-            }
+            HEAP_ASSERT_DATA_EQUALS(expected, heap);
 
             destroy_heap(heap);
         }
@@ -218,10 +261,7 @@ void heap_increase_key(HeapT* heap, size_t index, SequenceT key) {
             HeapT* heap = create_heap((SequenceT*) &arr, 5);
             min_heapify(heap, 1);
 
-            size_t i = 0;
-            for (; i < heap->size; ++i) {
-                assert(expected[i] == heap->data[i]);
-            }
+            HEAP_ASSERT_DATA_EQUALS(expected, heap);
 
             destroy_heap(heap);
         }
@@ -233,10 +273,7 @@ void heap_increase_key(HeapT* heap, size_t index, SequenceT key) {
             HeapT* heap = create_heap((SequenceT*) &arr, 10);
             build_max_heap(heap);
 
-            size_t i = 0;
-            for (; i < heap->size; ++i) {
-                assert(expected[i] == heap->data[i]);
-            }
+            HEAP_ASSERT_DATA_EQUALS(expected, heap);
 
             destroy_heap(heap);
         }
